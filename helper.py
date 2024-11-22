@@ -1,5 +1,6 @@
 from random import randint as rand
 from copy import deepcopy as dcp
+
 allFeatures = set()
 
 class FSet():
@@ -12,6 +13,7 @@ class FSet():
     
 def evalFSet(fset): return rand(0,1000) / 10 
 
+def printClean(str) : print(str, end="")
 
 def modifySet(set,i,mod):
     temp = dcp(set)
@@ -21,15 +23,15 @@ def modifySet(set,i,mod):
 
 
 def expandFset(fset):
-    print("Expanding ", end="")
-    print(fset, end="")
+    printClean("Expanding ")
+    printClean(fset)
     print(". . .\n")
     
     maxChild = fset
     for i in allFeatures:
         if i not in fset.set:
             newChild = modifySet(fset.set, i, 1)
-            print("    ", end = "")
+            printClean("    ")
             print(newChild)
             if newChild.eval > maxChild.eval:
                 maxChild = dcp(newChild)
@@ -38,15 +40,15 @@ def expandFset(fset):
 
 
 def elimFset(fset):
-    print("Eliminating ", end="")
-    print(fset, end="")
+    printClean("Eliminating ")
+    printClean(fset)
     print(". . .\n")
 
     maxChild = fset
     for i in allFeatures:
         if i in fset.set:
             newChild = modifySet(fset.set, i, 0)
-            print("    ", end = "")
+            printClean("    ")
             print(newChild)
             if newChild.eval > maxChild.eval:
                 maxChild = dcp(newChild)
@@ -76,9 +78,7 @@ def forwardSearch(numFeatures):
 def backwardsElim(numFeatures):
     global allFeatures
     allFeatures = set(range(1, numFeatures+1))
-
     currSet = FSet(allFeatures)
-
     print(f"\nStarting Backwards Elim. w/ full set and random eval.\n")
     
     iters = 0
@@ -94,7 +94,3 @@ def backwardsElim(numFeatures):
 
     print(f"Finished in {iters} iterations.\n")
     return 0
-
-
-
-
