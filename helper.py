@@ -94,3 +94,34 @@ def backwardsElim(numFeatures):
 
     print(f"Finished in {iters} iterations.\n")
     return 0
+
+def identifyData():
+    return 0
+
+def readIEEE(str):
+    number = float(str.split("e")[0])           # extracts number from IEEE
+    sign = str.split("e")[1][0]                 # extracts sign from IEEE 
+    exponent = float(str.split("e")[1][1:])     # extracts exponent from IEEE
+    
+    match sign:
+        case "+":
+            return round((number * (10 ** exponent)), 7)
+        case "-":
+            return round((number * (10 ** -exponent)), 7)
+        
+def identifyNumInstances(file):
+    f = open(file, "r")
+    cnt = 0
+    for x in f:
+        cnt += 1
+    f.close()
+    return cnt
+
+def identifyNumFeatures(file):
+    f = open(file, "r")
+    line1 = f.readline()            # read one line
+    featuresList =  [i for i in line1.split(" ") if i != ""]  # splits string into all columns and removes spaces
+    featuresList = featuresList[1:]          # removes the class id
+    f.close()
+
+    return len(featuresList)
