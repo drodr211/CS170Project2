@@ -1,9 +1,20 @@
 from helper import *
 
-print("\nWelcome to drodr211's Feature Selection Algorithm.\n\n")
+print("\nWelcome to drodr211's Feature Selection Algorithm.\n")
 
-numFeatures = int(input("Enter total number of features: \n\n  >>> ")) 
-algo = int(input("\nWhich algorithm to use?. \n\n    1. Forward Selection\n    2. Backwards Elimination\n\n  >>> "))
+fileName = input("Enter file name:\n\n  >>> ")
+
+algo = int(input("\nWhich algorithm to use?\n\n    1. Forward Selection\n    2. Backwards Elimination\n\n  >>> "))
+numFeatures = identifyNumFeatures(fileName)
+numInstances = identifyNumInstances(fileName)
+
+print(f"\nThis dataset has {numFeatures} features with {numInstances} instances.")
+
+c = classifier(fileName)
+# for row in range(len(c.instances)):
+#     printClean(row+1)
+#     printClean("  ")
+#     print(c.instances[row])
 
 match algo:
     case 1:

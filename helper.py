@@ -1,5 +1,6 @@
 from random import randint as rand
 from copy import deepcopy as dcp
+import math
 
 allFeatures = set()
 
@@ -10,7 +11,36 @@ class FSet():
     def __repr__(self):
         if self.set:    return f"Feature set {self.set} with accuracy {self.eval}%"
         else:           return f"Empty feature set with accuracy {self.eval}%"
+
+class classifier():
+    def convertToDecimal(self):
+        for row in range(len(self.instances)):
+            for col in range(len(self.instances[row])):
+                self.instances[row][col] = readIEEE(self.instances[row][col])
+    def normalize(self):
+        for col in range(1, self.numFeatures):
+            max = self.instances[1][col]
+            min = self.instances[1][col]
+            for row in range(len(self.instances)):
+                data = self.instances[row][col]
+                if data > max: max = data
+                if data < min: min = data
+            for row in range(len(self.instances)):
+                self.instances[row][col] = round((self.instances[row][col]-min)/(max-min), 7)   
+    def test(self, instance):
+        return 0 #label
     
+    def __init__(self, filename):
+        self.numFeatures = identifyNumFeatures(filename)
+        self.instances = []
+        f = open(filename)
+        for x in f:
+            self.instances.append([i for i in x.split(" ") if i != ""])
+        f.close()
+        self.convertToDecimal()
+        self.normalize()
+    
+
 def evalFSet(fset): return rand(0,1000) / 10 
 
 def printClean(str) : print(str, end="")
@@ -20,7 +50,6 @@ def modifySet(set,i,mod):
     if mod: temp.add(i)
     else:   temp.remove(i)
     return FSet(temp)
-
 
 def expandFset(fset):
     printClean("Expanding ")
@@ -38,7 +67,6 @@ def expandFset(fset):
     print("\n")
     return maxChild
 
-
 def elimFset(fset):
     printClean("Eliminating ")
     printClean(fset)
@@ -54,7 +82,6 @@ def elimFset(fset):
                 maxChild = dcp(newChild)
     print("\n")
     return maxChild
-
 
 def forwardSearch(numFeatures):
     global allFeatures
@@ -93,9 +120,6 @@ def backwardsElim(numFeatures):
             continue
 
     print(f"Finished in {iters} iterations.\n")
-    return 0
-
-def identifyData():
     return 0
 
 def readIEEE(str):
