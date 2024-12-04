@@ -29,18 +29,31 @@ class classifier():
             for row in range(len(self.instances)):          # adjust all data in the column
                 self.instances[row][col] = round((self.instances[row][col]-min)/(max-min), 7) # normalize data (from 0 to 1)
        
-    def test(self, instance):
-        return 0 #label
+    def test(self, testInstance):
+        label = self.instances[0][0]
+        dist = math.dist(self.instances[0][1:], testInstance)
+        for row in range(len(self.instances)):
+            currDist = math.dist(self.instances[row][1:], testInstance)
+            if (currDist < dist):
+                dist = currDist
+                label = self.instances[row][0]
+
+        return label
     
-    def __init__(self, filename):
-        self.numFeatures = identifyNumFeatures(filename)                # calc number of features (num of columns)
-        self.instances = []                                             # initialize empty list 
-        f = open(filename)                                              # open file
-        for x in f:                                                     # for line in file
-            self.instances.append([i for i in x.split(" ") if i != ""]) # split line to indiv feature vals and remove spaces
-        f.close()                                                       # close file
-        self.convertToDecimal()                                         # convert string data to decimal
-        self.normalize()                                                # normalize data (from 0 to 1)
+    def __init__(self, filename=0, data=0):
+        if filename is not 0:
+            self.numFeatures = identifyNumFeatures(filename)                # calc number of features (num of columns)
+            self.instances = []                                             # initialize empty list 
+            f = open(filename)                                              # open file
+            for x in f:                                                     # for line in file
+                self.instances.append([i for i in x.split(" ") if i != ""]) # split line to indiv feature vals and remove spaces
+            f.close()
+            self.convertToDecimal()                                         # convert string data to decimal
+            self.normalize()                                                        # close file
+        else:
+            self.numFeatures = len(data[1]) - 1
+            self.instances = data  
+
     
 def modifySet(set,i,mod):
     temp = dcp(set)
@@ -118,3 +131,40 @@ def backwardsElim(numFeatures):
 
     print(f"Finished in {iters} iterations.\n")
     return 0
+
+
+
+def trimFeatures(featureSet, instances):
+    newData = dcp(instances)
+    for row in range(len(newData)):
+        offset = 0
+        for column in range(1, len(newData[row])):
+            if column not in featureSet:
+                newData[row].pop(column-offset)
+                offset += 1
+
+    return newData 
+
+def validator(featureSet, cl):
+    trimmedFeatureData = trimFeatures(featureSet, cl.instances)
+    
+    success = 0
+    fails = 0
+
+    for row in range(len(trimmedFeatureData)):
+        testRow = trimmedFeatureData[row]
+        testLabel = testRow[0]
+
+        newTestData = dcp(trimmedFeatureData)
+        newTestData.remove(testRow)
+
+        testClsfr = classifier(0, newTestData)
+
+        if testClsfr.test(testRow[1:]) == testLabel:
+            success += 1
+        else:
+            fails += 1
+
+    accuracy = success/(success+fails)
+    print(f"Accuracy: {accuracy}%")
+    return accuracy

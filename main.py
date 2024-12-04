@@ -11,10 +11,6 @@ numInstances = identifyNumInstances(fileName)
 print(f"\nThis dataset has {numFeatures} features with {numInstances} instances.")
 
 c = classifier(fileName)
-# for row in range(len(c.instances)):
-#     printClean(row+1)
-#     printClean("  ")
-#     print(c.instances[row])
 
 match algo:
     case 1:
