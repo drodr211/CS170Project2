@@ -1,6 +1,7 @@
 from auxiliary import *
 from copy import deepcopy as dcp
 import math
+import time
 
 allFeatures = set()
 
@@ -19,6 +20,8 @@ class classifier():
                 self.instances[row][col] = readIEEE(self.instances[row][col])   # convert string data to decimal
 
     def normalize(self):
+        print("Normalizing data . . .")
+        start = time.perf_counter()
         for col in range(1, self.numFeatures):              # for every column in the matrix
             max = self.instances[1][col]                    # initialize max
             min = self.instances[1][col]                    # initialize min
@@ -28,6 +31,8 @@ class classifier():
                 if data < min: min = data                   # adjust min
             for row in range(len(self.instances)):          # adjust all data in the column
                 self.instances[row][col] = round((self.instances[row][col]-min)/(max-min), 7) # normalize data (from 0 to 1)
+        end = time.perf_counter()
+        print(f"Done normalizing in {round(end-start, 3)} seconds!\n")
        
     def test(self, testInstance):
         label = self.instances[0][0]
@@ -166,5 +171,5 @@ def validator(featureSet, cl):
             fails += 1
 
     accuracy = success/(success+fails)
-    print(f"Accuracy: {accuracy}%")
-    return accuracy
+    print(f"Accuracy: {round(accuracy*100, 7)}%")
+    return round(accuracy, 7)
