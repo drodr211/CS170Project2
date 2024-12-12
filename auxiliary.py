@@ -1,6 +1,5 @@
 from random import randint as rand
 
-def evalFSet(fset): return rand(0,1000) / 10 
 def printClean(str) : print(str, end="")
 
 def readIEEE(str):

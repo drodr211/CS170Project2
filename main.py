@@ -1,35 +1,28 @@
+import helper as h
+import os.path as p
 from helper import *
 
 print("\nWelcome to drodr211's Feature Selection Algorithm.\n")
 
-fileName = input("Enter file name:\n\n  >>> ")
+h.fileName = input("Enter file name:\n\n  >>> ")
+if not p.isfile(h.fileName):
+    print("\nFile not found or name invalid. Exiting . . . . . .\n")
+    exit()
+algo = int(input("\nWhich algorithm to use?\n\n    1. Forward Selection\n    2. Backwards Elimination\n\n  >>> "))
 
-# algo = int(input("\nWhich algorithm to use?\n\n    1. Forward Selection\n    2. Backwards Elimination\n\n  >>> "))
-numFeatures = identifyNumFeatures(fileName)
-numInstances = identifyNumInstances(fileName)
+numFeatures = identifyNumFeatures(h.fileName)
+print(f"\nThis dataset has {numFeatures} features with {identifyNumInstances(h.fileName)} instances.\n")
 
-print(f"\nThis dataset has {numFeatures} features with {numInstances} instances.\n")
-
-c = classifier(fileName)
-
-match fileName:
-    case "small-test-dataset.txt": 
-        print("Testing small dataset with feature set {3,5,7}")
+match algo:
+    case 1:
         start = time.perf_counter()
-        validator({3,5,7}, c)
-        end = time.perf_counter()
-        print(f"Done testing in {round(end-start, 3)} seconds")
-    case "large-test-dataset.txt": 
-        print("Testing large dataset with feature set {1,15,27}")
+        forwardSearch(numFeatures)
+    case 2:
         start = time.perf_counter()
-        validator({1,15,27}, c)
-        end = time.perf_counter()
-        print(f"Done testing in {round(end-start, 3)} seconds")
+        backwardsElim(numFeatures)
+    case _:
+        print("Invalid algorithm choice. Exiting . . . . . .\n")
+        exit()
+end = time.perf_counter()
 
-print("\n")
-
-# match algo:
-#   case 1:
-#        forwardSearch(numFeatures)
-#    case 2:
-#        backwardsElim(numFeatures)
+print(f"Done searching in {round(end-start, 3)} seconds. \n")

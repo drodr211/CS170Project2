@@ -4,14 +4,7 @@ import math
 import time
 
 allFeatures = set()
-
-class FSet():
-    def __init__(self, set):
-        self.set = set
-        self.eval = evalFSet(self.set)
-    def __repr__(self):
-        if self.set:    return f"Feature set {self.set} with accuracy {self.eval}%"
-        else:           return f"Empty feature set with accuracy {self.eval}%"
+fileName = None
 
 class classifier():
     def convertToDecimal(self):
@@ -20,8 +13,6 @@ class classifier():
                 self.instances[row][col] = readIEEE(self.instances[row][col])   # convert string data to decimal
 
     def normalize(self):
-        print("Normalizing data . . .")
-        start = time.perf_counter()
         for col in range(1, self.numFeatures):              # for every column in the matrix
             max = self.instances[1][col]                    # initialize max
             min = self.instances[1][col]                    # initialize min
@@ -31,8 +22,6 @@ class classifier():
                 if data < min: min = data                   # adjust min
             for row in range(len(self.instances)):          # adjust all data in the column
                 self.instances[row][col] = round((self.instances[row][col]-min)/(max-min), 7) # normalize data (from 0 to 1)
-        end = time.perf_counter()
-        print(f"Done normalizing in {round(end-start, 3)} seconds!\n")
        
     def test(self, testInstance):
         label = self.instances[0][0]
@@ -46,7 +35,7 @@ class classifier():
         return label
     
     def __init__(self, filename=0, data=0):
-        if filename is not 0:
+        if filename != 0:
             self.numFeatures = identifyNumFeatures(filename)                # calc number of features (num of columns)
             self.instances = []                                             # initialize empty list 
             f = open(filename)                                              # open file
@@ -59,7 +48,14 @@ class classifier():
             self.numFeatures = len(data[1]) - 1
             self.instances = data  
 
-    
+class FSet():
+    def __init__(self, set):
+        self.set = set
+        self.eval = validator(self.set, classifier(fileName))
+    def __repr__(self):
+        if self.set:    return f"Feature set {self.set} with accuracy {self.eval}%"
+        else:           return f"Empty feature set with accuracy {self.eval}%"
+
 def modifySet(set,i,mod):
     temp = dcp(set)
     if mod: temp.add(i)         # add feature to set
@@ -102,7 +98,7 @@ def forwardSearch(numFeatures):
     global allFeatures
     allFeatures = set(range(1, numFeatures+1))
     currSet = FSet(set())
-    print(f"\nStarting Forward Search w/ empty set and random eval.\n")
+    print(f"\nStarting Forward Search w/ empty feature set, using “leaving-one-out” evaluation\n")
 
     iters = 0
     while True:
@@ -121,7 +117,7 @@ def backwardsElim(numFeatures):
     global allFeatures
     allFeatures = set(range(1, numFeatures+1))
     currSet = FSet(allFeatures)
-    print(f"\nStarting Backwards Elim. w/ full set and random eval.\n")
+    print(f"\nStarting Backwards Elim. w/ full feature set, using “leaving-one-out” evaluation\n")
     
     iters = 0
     while True:
@@ -137,8 +133,6 @@ def backwardsElim(numFeatures):
     print(f"Finished in {iters} iterations.\n")
     return 0
 
-
-
 def trimFeatures(featureSet, instances):
     newData = dcp(instances)
     for row in range(len(newData)):
@@ -152,7 +146,6 @@ def trimFeatures(featureSet, instances):
 
 def validator(featureSet, cl):
     trimmedFeatureData = trimFeatures(featureSet, cl.instances)
-    
     success = 0
     fails = 0
 
@@ -170,6 +163,6 @@ def validator(featureSet, cl):
         else:
             fails += 1
 
-    accuracy = success/(success+fails)
-    print(f"Accuracy: {round(accuracy*100, 7)}%")
+    accuracy = success/(success+fails)*100
+    #print(f"Accuracy: {round(accuracy*100, 7)}%")
     return round(accuracy, 7)
